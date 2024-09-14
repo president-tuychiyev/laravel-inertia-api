@@ -1,0 +1,31 @@
+services:
+  medol:
+    restart: unless-stopped
+    container_name: medol
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - '.:/var/www/'
+      - './:/public/uploads/'
+    ports:
+      - '8000:80'
+    networks:
+      - medol_network
+  pgsql_medol:
+    restart: unless-stopped
+    container_name: pgsql_medol
+    image: postgres:14.5-alpine
+    ports:
+      - 5436:5432
+    environment:
+      - POSTGRES_DB=medol
+      - POSTGRES_USER=medol
+      - POSTGRES_PASSWORD=medol_test_password
+    volumes:
+      - './data:/var/lib/postgresql/data'
+    networks:
+      - medol_network
+networks:
+  medol_network:
+    driver: bridge
